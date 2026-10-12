@@ -1,6 +1,6 @@
 # Autoshortcut
 
-Simple Python script to create terminal shortcuts and .desktop files for PyInstaller-built executables. Makes it easy to run Python apps from the terminal or GNOME Activities overview.
+Simple Python script to create terminal shortcuts and .desktop files for PyInstaller-built executables — or for any launchable file, such as a `.sh` script. Makes it easy to run Python apps and other programs from the terminal or GNOME Activities overview.
 
 ## Workflow
 
@@ -10,15 +10,28 @@ Simple Python script to create terminal shortcuts and .desktop files for PyInsta
 
 Autoshortcut automatically finds the latest build in the `dist/` directory and creates the necessary symlinks and desktop files.
 
+You can also point it at any launchable file (e.g. a `.sh` script) to create shortcuts for that instead:
+
+```bash
+python autoshortcut.py -d -o /path/to/something.sh
+```
+
 ## Usage
 
 ```
-python autoshortcut.py [options]
+python autoshortcut.py [options] [file]
 ```
 
 ### Options
 
-- **No arguments**: Normal install mode
+- **`[file]`**: Optional path to any launchable file (e.g. a `.sh` script, AppImage, or binary)
+  - Shortcuts are created for that file instead of the latest build in `dist/`
+  - The file is made executable if it isn't already
+  - The shortcut name comes from the file name without its extension (`something.sh` -> `something`)
+  - The created `.desktop` file includes a `Path=` entry pointing at the file's folder
+  - Can also be combined with `-r` to remove that file's shortcuts
+
+- **No arguments**: Normal install mode (latest build in `dist/`)
   - Creates a symlink in `/usr/local/bin/` for terminal access
   - If `-d` is also passed, creates a .desktop file for the Activities menu
 
@@ -37,6 +50,8 @@ python autoshortcut.py [options]
 
 - **`-h`, `--help`**: Show help message and exit
 
+Flags may be combined: `-do` is the same as `-d -o`.
+
 ## Examples
 
 ```bash
@@ -49,8 +64,14 @@ python autoshortcut.py -d
 # Create only .desktop file (no terminal access)
 python autoshortcut.py -d -o
 
+# Create only a .desktop file for any launchable file, e.g. a shell script
+python autoshortcut.py -do /path/to/game.sh
+
 # Remove the app installation
 python autoshortcut.py -r
+
+# Remove the shortcuts created for a specific file
+python autoshortcut.py -r /path/to/game.sh
 
 # Show help
 python autoshortcut.py --help
